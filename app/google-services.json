@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "753742439046",
+    "firebase_url": "https://drone-control-e65e7.firebaseio.com",
+    "project_id": "drone-control-e65e7",
+    "storage_bucket": "drone-control-e65e7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:753742439046:android:a061f43383519783",
+        "android_client_info": {
+          "package_name": "com.example.sdiaoune.droneControl"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "753742439046-jvi7gu8if7lno1sadt2tuvhmuqjk5qir.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.sdiaoune.droneControl",
+            "certificate_hash": "e2431aeabd8e54d8a39f4a9889332164dde801a1"
+          }
+        },
+        {
+          "client_id": "753742439046-91nf1cq6mvkrn9qimfstrltuk4epupc1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCD1ZeXCNMK0wLCg95zXNqSENER8PDFZJw"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "753742439046-91nf1cq6mvkrn9qimfstrltuk4epupc1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
