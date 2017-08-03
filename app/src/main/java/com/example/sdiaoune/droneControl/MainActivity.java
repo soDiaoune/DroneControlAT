@@ -12,18 +12,20 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.sdiaoune.droneControl.DroneAction.Discoverer;
 import com.example.sdiaoune.droneControl.DroneAction.ParrotDrone;
+import com.example.sdiaoune.droneControl.DroneAction.ParrotDroneFactory;
 import com.example.sdiaoune.droneControl.DroneAction.ParrotFlyingDrone;
 import com.example.sdiaoune.droneControl.DroneControl.AccelerometerData;
 import com.example.sdiaoune.droneControl.DroneControl.ActionType;
-import com.example.sdiaoune.droneControl.DroneControl.InteractionType;
 import com.parrot.arsdk.ARSDK;
 import com.parrot.arsdk.arcontroller.ARCONTROLLER_DEVICE_STATE_ENUM;
 import com.parrot.arsdk.ardiscovery.ARDiscoveryDeviceService;
@@ -36,11 +38,9 @@ import java.util.Set;
 public class MainActivity extends AppCompatActivity implements Discoverer.DiscovererListener, ParrotDrone.ParrotDroneListener, SensorEventListener {
     private static final String TAG = "MobileMainActivity";
 
-    private static final int ALPHA_ANIM_DURATION = 500;
 
     /** Code for permission request result handling. */
     private static final int REQUEST_CODE_PERMISSIONS_REQUEST = 1;
-    private static final String VALUE_STR = "value";
 
 
 
@@ -49,15 +49,15 @@ public class MainActivity extends AppCompatActivity implements Discoverer.Discov
 
     private Button mEmergencyBt;
     private Switch mAcceleroSwitch;
+    private TextView mConnectionTextView;
+    private TextView mWifiTextView;
+    private TextView mPilotingTextView;
 
     private ParrotDrone mDrone;
     private SensorManager mSensorManager;
 
     private AccelerometerData mAccData;
-    private int mCurrentAction;
     private Handler mHandler;
-    private Runnable mAnimRunnable;
-    private Runnable mSendAccRunnable;
     private Runnable mReconnectRunnable;
     private Discoverer mDiscoverer;
 
@@ -65,6 +65,7 @@ public class MainActivity extends AppCompatActivity implements Discoverer.Discov
         ARSDK.loadSDKLibs();
         ARSALPrint.setMinimumLogLevel(ARSAL_PRINT_LEVEL_ENUM.ARSAL_PRINT_VERBOSE);
     }
+    private boolean mUseWatchAccelero;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,10 +76,12 @@ public class MainActivity extends AppCompatActivity implements Discoverer.Discov
         mDiscoverer.addListener(this);
 
         mHandler = new Handler(getMainLooper());
-        mCurrentAction = ActionType.NONE;
         mAccData = new AccelerometerData(0, 0, 0);
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 
+        mConnectionTextView = (TextView) findViewById(R.id.connection_text_view);
+        mWifiTextView = (TextView) findViewById(R.id.wifi_text_view);
+        mPilotingTextView = (TextView) findViewById(R.id.piloting_text_view);
         mAcceleroSwitch = (Switch) findViewById(R.id.acceleroSwitch);
         mAcceleroSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -94,7 +97,15 @@ public class MainActivity extends AppCompatActivity implements Discoverer.Discov
             }
         });
 
-
+        mReconnectRunnable = new Runnable() {
+            @Override
+            public void run() {
+                if (mDiscoverer != null) {
+                    mDiscoverer.startDiscovering();
+                    mConnectionTextView.setText(R.string.discovering);
+                }
+            }
+        };
         Set<String> permissionsToRequest = new HashSet<>();
         String permission = Manifest.permission.ACCESS_COARSE_LOCATION;
 
@@ -116,6 +127,17 @@ public class MainActivity extends AppCompatActivity implements Discoverer.Discov
     }
 
     private void onAcceleroSwitchCheckChanged() {
+        mUseWatchAccelero = mAcceleroSwitch.isChecked();
+        Log.i(TAG, "Accelero is checked = " + mUseWatchAccelero);
+        if (!mUseWatchAccelero && mDrone != null) {
+            mDrone.stopPiloting();
+        }
+
+        updatePilotingText();
+    }
+
+    private void updatePilotingText() {
+        mPilotingTextView.setText((mUseWatchAccelero) ? R.string.with_piloting : R.string.no_piloting);
     }
     //region Button Listeners
     private void onEmergencyClicked() {
@@ -136,8 +158,11 @@ public class MainActivity extends AppCompatActivity implements Discoverer.Discov
     @Override
     protected void onResume() {
         super.onResume();
+        mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_UI);
 
         mDiscoverer.setup();
+        mConnectionTextView.setText(R.string.discovering);
+
     }
 
     @Override
@@ -171,11 +196,19 @@ public class MainActivity extends AppCompatActivity implements Discoverer.Discov
 
 
 
-    private void sendSensorValues() {
-        synchronized (mDroneLock) {
-            synchronized (mAcceleroLock) {
 
-                if (mDrone!= null && mAccData != null) {
+    @Override
+    public void onServiceDiscovered(ARDiscoveryDeviceService deviceService) {
+        mConnectionTextView.setVisibility(View.VISIBLE);
+        if (mDrone == null) {
+            mConnectionTextView.setText(String.format(getString(R.string.connecting_to_device), deviceService.getName()));
+            mDiscoverer.stopDiscovering();
+            synchronized (mDroneLock) {
+                mDrone = ParrotDroneFactory.createParrotDrone(deviceService, this);
+                mDrone.addListener(this);
+                synchronized (mAcceleroLock) {
+
+                    if ( mAccData != null && mUseWatchAccelero) {
                         mDrone.pilotWithAcceleroData(mAccData);
                     } else {
                         mDrone.stopPiloting();
@@ -183,11 +216,6 @@ public class MainActivity extends AppCompatActivity implements Discoverer.Discov
                 }
             }
         }
-    
-
-    @Override
-    public void onServiceDiscovered(ARDiscoveryDeviceService deviceService) {
-
     }
 
     @Override
@@ -200,13 +228,18 @@ public class MainActivity extends AppCompatActivity implements Discoverer.Discov
         switch (state) {
             case ARCONTROLLER_DEVICE_STATE_RUNNING:
                 mDiscoverer.stopDiscovering();
+                mConnectionTextView.setText(String.format(getString(R.string.device_connected), mDrone.getName()));
+                mWifiTextView.setVisibility(View.VISIBLE);
+                mPilotingTextView.setVisibility(View.VISIBLE);
 
                 break;
             case ARCONTROLLER_DEVICE_STATE_STOPPED:
                 synchronized (mDroneLock) {
                     mDrone = null;
                 }
-
+                mConnectionTextView.setText(R.string.device_disconnected);
+                mWifiTextView.setVisibility(View.GONE);
+                mPilotingTextView.setVisibility(View.GONE);
                 mHandler.postDelayed(mReconnectRunnable, 5000);
                 break;
         }
@@ -214,19 +247,19 @@ public class MainActivity extends AppCompatActivity implements Discoverer.Discov
 
     @Override
     public void onDroneActionChanged(int action) {
-        switch (action) {
-            case ActionType.LAND:
-                mEmergencyBt.setVisibility(View.VISIBLE);
-                break;
-            default:
-                mEmergencyBt.setVisibility(View.GONE);
-                break;
-        }
+
     }
 
     @Override
     public void onDroneWifiBandChanged(int band) {
-
+        switch (band) {
+            case ParrotDrone.WIFI_BAND_2_4GHZ:
+                mWifiTextView.setText(R.string.wifi_band_2ghz);
+                break;
+            case ParrotDrone.WIFI_BAND_5GHZ:
+                mWifiTextView.setText(null);
+                break;
+        }
     }
 
     @Override

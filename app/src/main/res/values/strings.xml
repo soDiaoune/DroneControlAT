@@ -2,5 +2,25 @@
     <string name="app_name">DroneControlIOT</string>
     <string name="pilot_from_wear">Pilot from wear</string>
     <string name="emergency">Emergency</string>
+    <string name="timeout_instruction_1">Disconnect your drone from all other devices</string>
+    <string name="timeout_instruction_2">Go to your phone/tablet wifi settings</string>
+    <string name="timeout_instruction_3">Select the Wifi network of your drone</string>
+    <string name="timeout_instruction_4">Authorize a non-internet network in the notifications</string>
+    <string name="timeout_instruction_5">Come back in this app</string>
+    <string name="timeout_instruction_6">Wait a few seconds and enjoy piloting!</string>
+    <string name="timeout_explanation">Discovery takes too long to be normal…</string>
+    <string name="discovering">Looking for a Parrot device to connect</string>
+    <string name="connecting_to_device">"Connecting to Parrot Device: %s"</string>
+    <string name="device_disconnected">Parrot device disconnected. Trying to reconnect.</string>
+    <string name="device_connected">Parrot device %s connected</string>
+    <string name="no_piloting">When you are ready to pilot it, \n
+        tap on the \n
+        \"Pilot from wear\" switch.</string>
+    <string name="wifi_band_2ghz">If you are experiencing too many disconnections\n
+        try putting you\'re drone on a 5ghz band \n
+        (with the Parrot official app).
+    </string>
+    <string name="with_piloting">You can start using your watch \n
+        to move the drone.</string>
 
 </resources>

@@ -7,6 +7,7 @@ import android.util.Log;
 import com.example.sdiaoune.droneControl.DroneControl.AccelerometerData;
 import com.example.sdiaoune.droneControl.DroneControl.ActionType;
 import com.example.sdiaoune.droneControl.DroneControl.JoystickData;
+import com.parrot.arsdk.arcommands.ARCOMMANDS_ARDRONE3_ANIMATIONS_FLIP_DIRECTION_ENUM;
 import com.parrot.arsdk.arcommands.ARCOMMANDS_ARDRONE3_NETWORK_WIFISCAN_BAND_ENUM;
 import com.parrot.arsdk.arcommands.ARCOMMANDS_ARDRONE3_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_ENUM;
 import com.parrot.arsdk.arcontroller.ARCONTROLLER_DICTIONARY_KEY_ENUM;
@@ -16,6 +17,7 @@ import com.parrot.arsdk.arcontroller.ARDeviceController;
 import com.parrot.arsdk.arcontroller.ARFeatureARDrone3;
 import com.parrot.arsdk.ardiscovery.ARDiscoveryDeviceService;
 
+import static android.R.attr.direction;
 import static com.parrot.arsdk.arcommands.ARCOMMANDS_ARDRONE3_NETWORK_WIFISCAN_BAND_ENUM.ARCOMMANDS_ARDRONE3_NETWORK_WIFISCAN_BAND_2_4GHZ;
 import static com.parrot.arsdk.arcommands.ARCOMMANDS_ARDRONE3_NETWORK_WIFISCAN_BAND_ENUM.ARCOMMANDS_ARDRONE3_NETWORK_WIFISCAN_BAND_5GHZ;
 import static com.parrot.arsdk.arcommands.ARCOMMANDS_ARDRONE3_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_ENUM.ARCOMMANDS_ARDRONE3_PILOTINGSTATE_FLYINGSTATECHANGED_STATE_HOVERING;

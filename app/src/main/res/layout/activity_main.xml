@@ -18,8 +18,6 @@
         android:text="@string/pilot_from_wear"
         android:textStyle="bold"
         android:textSize="18sp"
-        android:textColor="#3F51B5t"
-        android:buttonTint="#3F51B5"
         tools:layout_editor_absoluteY="0dp"
         tools:layout_editor_absoluteX="8dp"
         android:layout_marginLeft="20dp"
@@ -32,10 +30,64 @@
         android:id="@+id/emergencyBt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
+        android:text="@string/emergency"
+        android:layout_above="@+id/acceleroSwitch"
         android:layout_centerHorizontal="true"
+        android:layout_marginBottom="26dp" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="20dp"
+        android:text="WIFI :" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/textView"
+        android:layout_marginTop="32dp"
+        android:text="DroneConnection :" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/textView2"
+        android:layout_marginTop="44dp"
+        android:text="Piloting : " />
+
+    <TextView
+        android:id="@+id/wifi_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/textView2"
+        android:layout_alignTop="@+id/textView"
         android:visibility="gone"
-        android:layout_marginTop="175dp"
-        android:text="@string/emergency" />
+        android:text="TextView" />
+
+    <TextView
+        android:id="@+id/connection_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/device_connected"
+        android:layout_below="@+id/textView2"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="17dp" />
+
+    <TextView
+        android:id="@+id/piloting_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:text="@string/no_piloting"
+        android:layout_alignBottom="@+id/textView3"
+        android:layout_toStartOf="@+id/connection_text_view"
+         />
 
 </RelativeLayout>
